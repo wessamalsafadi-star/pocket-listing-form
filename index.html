@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1F343F">
+<title>Find a home that fits | betterhomes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --slate: #1F343F;
+    --denim: #2C537A;
+    --powder: #7BA0B2;
+    --sand: #D9B9A0;
+    --mist: #EDE8E4;
+    --chip: #E5DDD7;
+    --salmon: #FF787A;
+    --white: #FFFFFF;
+    --font-head: "Ivy Mode", "Cormorant Garamond", Georgia, "Times New Roman", serif;
+    --font-body: "Ivy Epic", "Poppins", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--mist); }
+  body {
+    font-family: var(--font-body);
+    color: var(--slate);
+    line-height: 1.5;
+    padding: 40px clamp(20px, 4vw, 48px) 48px;
+  }
+
+  .panel { width: 100%; max-width: 1180px; margin: 0 auto; }
+
+  /* ---------- Progress ---------- */
+  .progress {
+    display: flex;
+    align-items: center;
+    margin: 0 0 56px;
+  }
+  .progress .marker {
+    width: 10px; height: 10px;
+    transform: rotate(45deg);
+    background: var(--denim);
+    flex-shrink: 0;
+    transition: background .25s, transform .25s;
+  }
+  .progress .marker.current {
+    background: var(--sand);
+    transform: rotate(45deg) scale(1.9);
+  }
+  .progress .marker.done { background: var(--slate); }
+  .progress .track {
+    flex: 1; height: 1px;
+    background: var(--powder);
+    margin: 0 4px;
+  }
+  .progress .track.done { background: var(--slate); }
+
+  /* ---------- Steps ---------- */
+  .step { display: none; }
+  .step.active { display: block; animation: rise .35s ease both; }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .step.active { animation: none; } }
+
+  .eyebrow {
+    font-size: 16px;
+    color: var(--denim);
+    margin-bottom: 8px;
+  }
+  h2 {
+    font-family: var(--font-head);
+    font-weight: 500;
+    font-size: clamp(30px, 3.8vw, 46px);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin-bottom: 26px;
+  }
+  fieldset { border: none; margin-bottom: 52px; }
+  fieldset legend { display: contents; }
+
+  /* ---------- Chips ---------- */
+  .chips {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 6px;
+  }
+  .chip {
+    font-family: var(--font-body);
+    font-size: 16px;
+    padding: 15px 18px;
+    border: none;
+    background: var(--chip);
+    color: var(--slate);
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+  }
+  .chip:hover { background: #DBD1CA; }
+  .chip[aria-pressed="true"] { background: var(--slate); color: var(--white); }
+  .chip:focus-visible, .text-input:focus-visible, .btn:focus-visible,
+  .link-btn:focus-visible, input[type="checkbox"]:focus-visible {
+    outline: 3px solid var(--denim); outline-offset: 2px;
+  }
+
+  /* ---------- Text inputs ---------- */
+  .fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 22px;
+    margin-bottom: 30px;
+  }
+  .field-label { display: block; font-size: 15px; margin-bottom: 8px; }
+  .text-input {
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: 16px;
+    padding: 15px 18px;
+    border: 1.5px solid transparent;
+    border-radius: 3px;
+    background: var(--chip);
+    color: var(--slate);
+  }
+  .text-input:focus { border-color: var(--slate); outline: none; background: var(--white); }
+  .text-input::placeholder { color: #8E9AA1; }
+
+  /* ---------- Consent ---------- */
+  .consent {
+    display: flex; gap: 14px; align-items: flex-start;
+    margin-bottom: 8px; max-width: 760px;
+  }
+  .consent input[type="checkbox"] {
+    width: 20px; height: 20px; margin-top: 2px;
+    accent-color: var(--slate); flex-shrink: 0; cursor: pointer;
+  }
+  .consent label { font-size: 14px; line-height: 1.55; cursor: pointer; }
+
+  /* ---------- Errors ---------- */
+  .error { display: none; font-size: 14px; color: #B4373A; margin-top: 12px; }
+  .error.show { display: block; }
+
+  /* ---------- Buttons ---------- */
+  .actions { display: flex; align-items: center; gap: 24px; margin-top: 44px; }
+  .btn {
+    font-family: var(--font-body);
+    font-size: 17px;
+    border: none; cursor: pointer;
+    padding: 15px 34px;
+    background: var(--salmon);
+    color: var(--slate);
+    border-radius: 3px;
+    transition: filter .15s, opacity .15s;
+  }
+  .btn:hover { filter: brightness(1.05); }
+  .btn[disabled] { opacity: .6; cursor: wait; }
+  .link-btn {
+    font-family: var(--font-body);
+    font-size: 15px; background: none; border: none;
+    color: var(--denim); cursor: pointer;
+    text-decoration: underline; text-underline-offset: 3px; padding: 6px 2px;
+  }
+
+  /* ---------- Success ---------- */
+  .success-mark {
+    width: 30px; height: 30px; background: var(--sand);
+    transform: rotate(45deg); margin: 8px 0 34px 8px;
+  }
+  .success p { font-size: 17px; max-width: 60ch; margin-bottom: 14px; }
+  .success .proof { color: var(--denim); font-size: 15px; margin-top: 26px; }
+
+  @media (max-width: 600px) {
+    body { padding: 28px 18px 36px; }
+    .progress { margin-bottom: 40px; }
+    fieldset { margin-bottom: 40px; }
+    .chips { grid-template-columns: repeat(2, 1fr); }
+    .actions { flex-wrap: wrap; gap: 16px; margin-top: 32px; }
+  }
+</style>
+</head>
+<body>
+<div class="panel">
+
+  <div class="progress" id="progressBar" aria-hidden="true"></div>
+
+  <!-- ============ STEP 1 : Property ============ -->
+  <section class="step active" id="step1" aria-labelledby="h-1">
+    <p class="eyebrow">Property</p>
+    <fieldset>
+      <legend><h2 id="h-1">Which type of property are you considering?</h2></legend>
+      <div class="chips" id="propertyType" data-multi="true"></div>
+      <p class="error" id="err-propertyType">Choose at least one property type to continue.</p>
+    </fieldset>
+    <fieldset>
+      <legend><h2>How many bedrooms would you prefer?</h2></legend>
+      <div class="chips" id="bedrooms" data-multi="false"></div>
+      <p class="error" id="err-bedrooms">Choose a bedroom option to continue.</p>
+    </fieldset>
+    <div class="actions">
+      <button class="btn" data-next="2">Continue</button>
+    </div>
+  </section>
+
+  <!-- ============ STEP 2 : Location ============ -->
+  <section class="step" id="step2" aria-labelledby="h-2">
+    <p class="eyebrow">Location</p>
+    <fieldset>
+      <legend><h2 id="h-2">Where would you love to live?</h2></legend>
+      <div class="chips" id="city" data-multi="false"></div>
+      <p class="error" id="err-city">Choose a city to continue.</p>
+    </fieldset>
+    <fieldset id="communitiesBlock" hidden>
+      <legend><h2>Which communities have you in mind?</h2></legend>
+      <div class="chips" id="communities" data-multi="true"></div>
+      <p class="error" id="err-communities">Choose at least one community — or "Open to suggestions".</p>
+    </fieldset>
+    <div class="actions">
+      <button class="btn" data-next="3">Continue</button>
+      <button class="link-btn" data-back="1">Back</button>
+    </div>
+  </section>
+
+  <!-- ============ STEP 3 : Budget ============ -->
+  <section class="step" id="step3" aria-labelledby="h-3">
+    <p class="eyebrow">Budget</p>
+    <fieldset>
+      <legend><h2 id="h-3">What's your purchase budget, in AED?</h2></legend>
+      <div class="chips" id="budget" data-multi="false"></div>
+      <p class="error" id="err-budget">Choose a budget range to continue.</p>
+    </fieldset>
+    <div class="actions">
+      <button class="btn" data-next="4">Continue</button>
+      <button class="link-btn" data-back="2">Back</button>
+    </div>
+  </section>
+
+  <!-- ============ STEP 4 : Preferences ============ -->
+  <section class="step" id="step4" aria-labelledby="h-4">
+    <p class="eyebrow">Preferences</p>
+    <fieldset>
+      <legend><h2 id="h-4">Ready to move in, or off-plan?</h2></legend>
+      <div class="chips" id="offplan" data-multi="false"></div>
+      <p class="error" id="err-offplan">Choose an option to continue.</p>
+    </fieldset>
+    <fieldset>
+      <legend><h2>Which view would you wake up for?</h2></legend>
+      <div class="chips" id="view" data-multi="true"></div>
+      <p class="error" id="err-view">Choose at least one view to continue.</p>
+    </fieldset>
+    <div class="actions">
+      <button class="btn" data-next="5">Continue</button>
+      <button class="link-btn" data-back="3">Back</button>
+    </div>
+  </section>
+
+  <!-- ============ STEP 5 : Contact ============ -->
+  <section class="step" id="step5" aria-labelledby="h-5">
+    <p class="eyebrow">Contact</p>
+    <h2 id="h-5">Where should we send your matches?</h2>
+
+    <div class="fields">
+      <div>
+        <label class="field-label" for="fullName">Full name</label>
+        <input class="text-input" type="text" id="fullName" name="full-name" autocomplete="name" placeholder="Your name" required>
+        <p class="error" id="err-fullName">Add your name so we know who we're writing to.</p>
+      </div>
+      <div>
+        <label class="field-label" for="email">Email</label>
+        <input class="text-input" type="email" id="email" name="email" autocomplete="email" placeholder="you@example.com" required>
+        <p class="error" id="err-email">Add a valid email — it's where your matches arrive.</p>
+      </div>
+      <div>
+        <label class="field-label" for="phone">Mobile number</label>
+        <input class="text-input" type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" placeholder="+971 50 123 4567" required>
+        <p class="error" id="err-phone">Add a mobile number we can reach you on.</p>
+      </div>
+    </div>
+
+    <div class="consent">
+      <input type="checkbox" id="consent" name="consent" required>
+      <label for="consent">I'm happy for betterhomes to contact me about my enquiry and to process my details in line with its privacy policy.</label>
+    </div>
+    <p class="error" id="err-consent">We need your consent before we can be in touch.</p>
+    <p class="error" id="err-submit">Something went wrong sending your details. Please try again in a moment.</p>
+
+    <div class="actions">
+      <button class="btn" id="submitBtn">Send my matches</button>
+      <button class="link-btn" data-back="4">Back</button>
+    </div>
+  </section>
+
+  <!-- ============ SUCCESS ============ -->
+  <section class="step success" id="stepDone" aria-labelledby="h-done">
+    <div class="success-mark" aria-hidden="true"></div>
+    <h2 id="h-done">Thank you<span id="doneName"></span>.</h2>
+    <p id="doneSummary">Your matches are being prepared, and a community specialist will be in touch shortly.</p>
+    <p class="proof">Since 1986, we've guided clients through every UAE market cycle — over 250,000 homes sold and rented. Yours is next.</p>
+  </section>
+
+</div>
+
+<script>
+/* ============================================================
+   Config
+   ============================================================ */
+const WEBHOOK_URL = "https://engageteam.app.n8n.cloud/webhook/0f3f1214-f58b-4301-9b1f-7a03d9fc714d";
+
+const OPTIONS = {
+  propertyType: ["Apartment", "Villa", "Townhouse", "Penthouse", "Duplex"],
+  bedrooms: ["Studio", "1", "2", "3", "4", "5+"],
+  city: ["Dubai", "Abu Dhabi"],
+  communities: {
+    "Dubai": [
+      "Dubai Marina", "Downtown Dubai", "Palm Jumeirah", "Business Bay",
+      "Jumeirah Village Circle", "Dubai Hills Estate", "Arabian Ranches",
+      "Jumeirah Beach Residence", "Emirates Hills", "Meydan"
+    ],
+    "Abu Dhabi": [
+      "Yas Island", "Saadiyat Island", "Al Reem Island", "Al Raha Beach",
+      "Khalifa City", "Masdar City", "Al Reef", "Corniche Area"
+    ]
+  },
+  openOption: "Open to suggestions",
+  /* label shown → value sent */
+  budget: [
+    { label: "500K – 1M", value: "500k-1M" },
+    { label: "1M – 3M",   value: "1M-3M" },
+    { label: "3M – 7M",   value: "3M-7M" },
+    { label: "7M – 15M",  value: "7M-15M" },
+    { label: "15M+",      value: "15M+" }
+  ],
+  offplan: ["Ready", "Off-plan", "No preference"],
+  view: ["Sea", "Marina", "Beach", "Community", "No preference"]
+};
+
+/* Options that clear the rest of their group when selected */
+const EXCLUSIVE = { communities: OPTIONS.openOption, view: "No preference" };
+
+const state = {
+  propertyType: [],
+  bedrooms: null,
+  city: null,
+  communities: [],
+  budget: null,
+  offplan: null,
+  view: [],
+  fullName: "", email: "", phone: "", consent: false
+};
+
+let current = 1;
+const TOTAL = 5;
+
+/* ---------- helpers ---------- */
+const labelOf = o => (typeof o === "string" ? o : o.label);
+const valueOf = o => (typeof o === "string" ? o : o.value);
+
+function currentOptions(groupId) {
+  if (groupId === "communities") {
+    return state.city ? OPTIONS.communities[state.city].concat(OPTIONS.openOption) : [];
+  }
+  return OPTIONS[groupId];
+}
+
+function isSelected(groupId, v) {
+  const val = state[groupId];
+  return Array.isArray(val) ? val.includes(v) : val === v;
+}
+
+/* ---------- chip rendering ---------- */
+function renderChips(groupId) {
+  const el = document.getElementById(groupId);
+  const multi = el.dataset.multi === "true";
+  el.innerHTML = "";
+  currentOptions(groupId).forEach(o => {
+    const v = valueOf(o);
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "chip";
+    b.textContent = labelOf(o);
+    b.setAttribute("aria-pressed", isSelected(groupId, v) ? "true" : "false");
+    b.addEventListener("click", () => toggle(groupId, v, multi));
+    el.appendChild(b);
+  });
+}
+
+function toggle(groupId, v, multi) {
+  if (multi) {
+    const excl = EXCLUSIVE[groupId];
+    let arr = state[groupId];
+    if (arr.includes(v))            arr = arr.filter(x => x !== v);
+    else if (excl && v === excl)    arr = [v];
+    else                            arr = arr.filter(x => x !== excl).concat(v);
+    state[groupId] = arr;
+  } else {
+    state[groupId] = (state[groupId] === v) ? null : v;
+    if (groupId === "city") {
+      state.communities = [];
+      refreshCommunities();
+    }
+  }
+  renderChips(groupId);
+  clearError(groupId);
+  postHeight();
+}
+
+function refreshCommunities() {
+  const block = document.getElementById("communitiesBlock");
+  block.hidden = !state.city;
+  if (state.city) renderChips("communities");
+}
+
+/* ---------- progress ---------- */
+function renderProgress() {
+  const bar = document.getElementById("progressBar");
+  bar.innerHTML = "";
+  for (let i = 1; i <= TOTAL; i++) {
+    const m = document.createElement("span");
+    m.className = "marker" + (i < current ? " done" : i === current ? " current" : "");
+    bar.appendChild(m);
+    if (i < TOTAL) {
+      const t = document.createElement("span");
+      t.className = "track" + (i < current ? " done" : "");
+      bar.appendChild(t);
+    }
+  }
+}
+
+/* ---------- navigation ---------- */
+function goTo(step) {
+  document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
+  document.getElementById(step > TOTAL ? "stepDone" : "step" + step).classList.add("active");
+  current = step;
+  renderProgress();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  try { window.parent.postMessage({ type: "bh-form-scroll-top" }, "*"); } catch (e) {}
+  postHeight();
+}
+
+/* ---------- validation (every field required) ---------- */
+function showError(id) { document.getElementById("err-" + id)?.classList.add("show"); postHeight(); }
+function clearError(id) { document.getElementById("err-" + id)?.classList.remove("show"); }
+
+function validateStep(step) {
+  let ok = true;
+  const need = (cond, id) => { cond ? clearError(id) : (showError(id), ok = false); };
+  if (step === 1) {
+    need(state.propertyType.length > 0, "propertyType");
+    need(!!state.bedrooms, "bedrooms");
+  }
+  if (step === 2) {
+    need(!!state.city, "city");
+    need(state.communities.length > 0, "communities");
+  }
+  if (step === 3) need(!!state.budget, "budget");
+  if (step === 4) {
+    need(!!state.offplan, "offplan");
+    need(state.view.length > 0, "view");
+  }
+  if (step === 5) {
+    state.fullName = document.getElementById("fullName").value.trim();
+    state.email    = document.getElementById("email").value.trim();
+    state.phone    = document.getElementById("phone").value.trim();
+    state.consent  = document.getElementById("consent").checked;
+    need(state.fullName.length > 1, "fullName");
+    need(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.email), "email");
+    need(/^[+\d][\d\s\-()]{6,}$/.test(state.phone), "phone");
+    need(state.consent === true, "consent");
+  }
+  return ok;
+}
+
+/* ---------- payload ---------- */
+function buildPayload() {
+  return {
+    "property-type": state.propertyType,
+    "bedrooms": state.bedrooms,
+    "city": state.city,
+    "communities": state.communities,
+    "budget": state.budget,
+    "offplan": state.offplan,
+    "view": state.view.map(v => v.toLowerCase()),
+    "full-name": state.fullName,
+    "email": state.email,
+    "phone": state.phone.replace(/[\s\-()]/g, ""),
+    "consent": state.consent
+  };
+}
+
+/* ---------- submit ---------- */
+async function submit() {
+  clearError("submit");
+  if (!validateStep(5)) return;
+
+  const btn = document.getElementById("submitBtn");
+  btn.disabled = true;
+  btn.textContent = "Sending…";
+
+  try {
+    const res = await fetch(WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(buildPayload())
+    });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+
+    const first = state.fullName.split(" ")[0];
+    document.getElementById("doneName").textContent = first ? ", " + first : "";
+    const where = state.communities[0] !== OPTIONS.openOption
+      ? state.communities.slice(0, 2).join(" and ")
+      : state.city;
+    document.getElementById("doneSummary").textContent =
+      `Your matches are being prepared, and a community specialist who knows ${where} will be in touch shortly.`;
+    try { window.parent.postMessage({ type: "bh-form-submitted", payload: buildPayload() }, "*"); } catch (e) {}
+    goTo(TOTAL + 1);
+  } catch (err) {
+    console.error("betterhomes form submit failed:", err);
+    showError("submit");
+    btn.disabled = false;
+    btn.textContent = "Send my matches";
+  }
+}
+
+/* ---------- iframe auto-height ---------- */
+function postHeight() {
+  requestAnimationFrame(() => {
+    try {
+      window.parent.postMessage({ type: "bh-form-height", height: document.documentElement.scrollHeight }, "*");
+    } catch (e) {}
+  });
+}
+
+/* ---------- wire up ---------- */
+document.querySelectorAll("[data-next]").forEach(b =>
+  b.addEventListener("click", () => { if (validateStep(current)) goTo(Number(b.dataset.next)); }));
+document.querySelectorAll("[data-back]").forEach(b =>
+  b.addEventListener("click", () => goTo(Number(b.dataset.back))));
+
+document.getElementById("consent").addEventListener("change", () => clearError("consent"));
+["fullName", "email", "phone"].forEach(id =>
+  document.getElementById(id).addEventListener("input", () => clearError(id)));
+document.getElementById("submitBtn").addEventListener("click", submit);
+window.addEventListener("resize", postHeight);
+
+/* ---------- init ---------- */
+["propertyType", "bedrooms", "city", "budget", "offplan", "view"].forEach(renderChips);
+renderProgress();
+postHeight();
+</script>
+</body>
+</html>
