@@ -14,7 +14,8 @@
     --powder: #7BA0B2;
     --sand: #D9B9A0;
     --mist: #EDE8E4;
-    --chip: #E5DDD7;
+    --track: #DDD6D0;
+    --muted: #7E8890;
     --salmon: #FF787A;
     --white: #FFFFFF;
     --font-head: "Ivy Mode", "Cormorant Garamond", Georgia, "Times New Roman", serif;
@@ -22,40 +23,47 @@
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { background: var(--mist); }
+  html, body { background: var(--white); }
   body {
     font-family: var(--font-body);
     color: var(--slate);
     line-height: 1.5;
-    padding: 40px clamp(20px, 4vw, 48px) 48px;
+    padding: 24px clamp(12px, 3vw, 32px) 32px;
   }
 
-  .panel { width: 100%; max-width: 1180px; margin: 0 auto; }
+  .panel {
+    width: 100%; max-width: 860px; margin: 0 auto;
+    background: var(--mist);
+    border-radius: 20px;
+    padding: 44px clamp(24px, 5vw, 52px) 48px;
+  }
 
   /* ---------- Progress ---------- */
   .progress {
     display: flex;
     align-items: center;
+    gap: 18px;
     margin: 0 0 56px;
   }
-  .progress .marker {
-    width: 10px; height: 10px;
-    transform: rotate(45deg);
-    background: var(--denim);
-    flex-shrink: 0;
-    transition: background .25s, transform .25s;
-  }
-  .progress .marker.current {
-    background: var(--sand);
-    transform: rotate(45deg) scale(1.9);
-  }
-  .progress .marker.done { background: var(--slate); }
   .progress .track {
-    flex: 1; height: 1px;
-    background: var(--powder);
-    margin: 0 4px;
+    flex: 1; height: 3px;
+    background: var(--track);
+    border-radius: 3px;
+    overflow: hidden;
   }
-  .progress .track.done { background: var(--slate); }
+  .progress .fill {
+    display: block; height: 100%;
+    background: var(--slate);
+    border-radius: 3px;
+    transition: width .35s ease;
+  }
+  .progress .label {
+    font-size: 12px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+  }
 
   /* ---------- Steps ---------- */
   .step { display: none; }
@@ -67,39 +75,59 @@
   @media (prefers-reduced-motion: reduce) { .step.active { animation: none; } }
 
   .eyebrow {
-    font-size: 16px;
+    font-size: 13px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
     color: var(--denim);
-    margin-bottom: 8px;
+    margin-bottom: 14px;
   }
   h2 {
     font-family: var(--font-head);
     font-weight: 500;
-    font-size: clamp(30px, 3.8vw, 46px);
+    font-size: clamp(30px, 4.2vw, 40px);
     line-height: 1.15;
     letter-spacing: -0.01em;
-    margin-bottom: 26px;
+    margin-bottom: 30px;
   }
-  fieldset { border: none; margin-bottom: 52px; }
+  .sub {
+    font-size: 17px;
+    color: #4A5860;
+    max-width: 70ch;
+    margin: -20px 0 40px;
+  }
+  .group-label {
+    font-size: 12px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .group-label + .sub { margin: -4px 0 18px; }
+  .q {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 19px;
+    line-height: 1.4;
+    margin-bottom: 16px;
+  }
+  fieldset { border: none; margin-bottom: 48px; }
   fieldset legend { display: contents; }
 
   /* ---------- Chips ---------- */
-  .chips {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 6px;
-  }
+  .chips { display: flex; flex-wrap: wrap; gap: 14px; }
   .chip {
     font-family: var(--font-body);
-    font-size: 16px;
-    padding: 15px 18px;
+    font-size: 17px;
+    padding: 15px 26px;
     border: none;
-    background: var(--chip);
+    background: var(--white);
     color: var(--slate);
-    border-radius: 3px;
+    border-radius: 999px;
     cursor: pointer;
-    transition: background .15s, color .15s;
+    transition: background .15s, color .15s, transform .1s;
   }
-  .chip:hover { background: #DBD1CA; }
+  .chip:hover { background: #F7F3F0; }
+  .chip:active { transform: scale(.98); }
   .chip[aria-pressed="true"] { background: var(--slate); color: var(--white); }
   .chip:focus-visible, .text-input:focus-visible, .btn:focus-visible,
   .link-btn:focus-visible, input[type="checkbox"]:focus-visible {
@@ -107,24 +135,26 @@
   }
 
   /* ---------- Text inputs ---------- */
-  .fields {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 22px;
-    margin-bottom: 30px;
+  .fields { display: grid; grid-template-columns: 1fr; gap: 28px; margin-bottom: 32px; }
+  .field-label {
+    display: block;
+    font-size: 12px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
   }
-  .field-label { display: block; font-size: 15px; margin-bottom: 8px; }
   .text-input {
     width: 100%;
     font-family: var(--font-body);
-    font-size: 16px;
-    padding: 15px 18px;
+    font-size: 17px;
+    padding: 20px 22px;
     border: 1.5px solid transparent;
-    border-radius: 3px;
-    background: var(--chip);
+    border-radius: 12px;
+    background: var(--white);
     color: var(--slate);
   }
-  .text-input:focus { border-color: var(--slate); outline: none; background: var(--white); }
+  .text-input:focus { border-color: var(--slate); outline: none; }
   .text-input::placeholder { color: #8E9AA1; }
 
   /* ---------- Consent ---------- */
@@ -136,31 +166,33 @@
     width: 20px; height: 20px; margin-top: 2px;
     accent-color: var(--slate); flex-shrink: 0; cursor: pointer;
   }
-  .consent label { font-size: 14px; line-height: 1.55; cursor: pointer; }
+  .consent label { font-size: 14px; line-height: 1.55; cursor: pointer; color: #4A5860; }
 
   /* ---------- Errors ---------- */
   .error { display: none; font-size: 14px; color: #B4373A; margin-top: 12px; }
   .error.show { display: block; }
 
   /* ---------- Buttons ---------- */
-  .actions { display: flex; align-items: center; gap: 24px; margin-top: 44px; }
+  .actions { display: flex; align-items: center; gap: 28px; margin-top: 44px; }
   .btn {
     font-family: var(--font-body);
-    font-size: 17px;
+    font-weight: 500;
+    font-size: 18px;
     border: none; cursor: pointer;
-    padding: 15px 34px;
+    padding: 20px 42px;
     background: var(--salmon);
-    color: var(--slate);
-    border-radius: 3px;
-    transition: filter .15s, opacity .15s;
+    color: var(--white);
+    border-radius: 999px;
+    transition: filter .15s, opacity .15s, transform .1s;
   }
-  .btn:hover { filter: brightness(1.05); }
+  .btn:hover { filter: brightness(1.04); }
+  .btn:active { transform: scale(.98); }
   .btn[disabled] { opacity: .6; cursor: wait; }
   .link-btn {
     font-family: var(--font-body);
-    font-size: 15px; background: none; border: none;
+    font-size: 17px; background: none; border: none;
     color: var(--denim); cursor: pointer;
-    text-decoration: underline; text-underline-offset: 3px; padding: 6px 2px;
+    text-decoration: underline; text-underline-offset: 4px; padding: 6px 2px;
   }
 
   /* ---------- Success ---------- */
@@ -172,18 +204,24 @@
   .success .proof { color: var(--denim); font-size: 15px; margin-top: 26px; }
 
   @media (max-width: 600px) {
-    body { padding: 28px 18px 36px; }
+    body { padding: 12px; }
+    .panel { padding: 32px 22px 36px; border-radius: 16px; }
     .progress { margin-bottom: 40px; }
     fieldset { margin-bottom: 40px; }
-    .chips { grid-template-columns: repeat(2, 1fr); }
-    .actions { flex-wrap: wrap; gap: 16px; margin-top: 32px; }
+    .chips { gap: 10px; }
+    .chip { font-size: 16px; padding: 13px 20px; }
+    .actions { flex-wrap: wrap; gap: 18px; margin-top: 32px; }
+    .btn { padding: 17px 34px; }
   }
 </style>
 </head>
 <body>
 <div class="panel">
 
-  <div class="progress" id="progressBar" aria-hidden="true"></div>
+  <div class="progress" id="progressBar" aria-hidden="true">
+    <span class="track"><span class="fill" id="progressFill"></span></span>
+    <span class="label" id="progressLabel"></span>
+  </div>
 
   <!-- ============ STEP 1 : Property ============ -->
   <section class="step active" id="step1" aria-labelledby="h-1">
@@ -206,13 +244,16 @@
   <!-- ============ STEP 2 : Location ============ -->
   <section class="step" id="step2" aria-labelledby="h-2">
     <p class="eyebrow">Location</p>
+    <h2 id="h-2">Where would you like to focus your search?</h2>
+    <p class="sub">Choose the locations you would like us to prioritise.</p>
     <fieldset>
-      <legend><h2 id="h-2">Where would you love to live?</h2></legend>
+      <legend><p class="group-label">Preferred city</p></legend>
       <div class="chips" id="city" data-multi="false"></div>
       <p class="error" id="err-city">Choose a city to continue.</p>
     </fieldset>
     <fieldset id="communitiesBlock" hidden>
-      <legend><h2>Which communities have you in mind?</h2></legend>
+      <legend><p class="group-label">Preferred communities</p></legend>
+      <p class="sub">Choose the communities that interest you, or keep your options open.</p>
       <div class="chips" id="communities" data-multi="true"></div>
       <p class="error" id="err-communities">Choose at least one community — or "Open to suggestions".</p>
     </fieldset>
@@ -224,9 +265,11 @@
 
   <!-- ============ STEP 3 : Budget ============ -->
   <section class="step" id="step3" aria-labelledby="h-3">
-    <p class="eyebrow">Budget</p>
+    <p class="eyebrow">Price range</p>
+    <h2 id="h-3">What purchase range are you considering?</h2>
+    <p class="sub">This helps us refine the selection around properties that suit your plans.</p>
     <fieldset>
-      <legend><h2 id="h-3">What's your purchase budget, in AED?</h2></legend>
+      <legend><p class="group-label">Preferred purchase range</p></legend>
       <div class="chips" id="budget" data-multi="false"></div>
       <p class="error" id="err-budget">Choose a budget range to continue.</p>
     </fieldset>
@@ -238,14 +281,16 @@
 
   <!-- ============ STEP 4 : Preferences ============ -->
   <section class="step" id="step4" aria-labelledby="h-4">
-    <p class="eyebrow">Preferences</p>
+    <p class="eyebrow">Your preferences</p>
+    <h2 id="h-4">A few finer details.</h2>
+    <p class="sub">Optional preferences help us shape the selection more closely around you.</p>
     <fieldset>
-      <legend><h2 id="h-4">Ready to move in, or off-plan?</h2></legend>
+      <legend><p class="q">Would you prefer a ready home or an off-plan property?</p></legend>
       <div class="chips" id="offplan" data-multi="false"></div>
       <p class="error" id="err-offplan">Choose an option to continue.</p>
     </fieldset>
     <fieldset>
-      <legend><h2>Which view would you wake up for?</h2></legend>
+      <legend><p class="q">Is there a particular view you prefer?</p></legend>
       <div class="chips" id="view" data-multi="true"></div>
       <p class="error" id="err-view">Choose at least one view to continue.</p>
     </fieldset>
@@ -257,24 +302,25 @@
 
   <!-- ============ STEP 5 : Contact ============ -->
   <section class="step" id="step5" aria-labelledby="h-5">
-    <p class="eyebrow">Contact</p>
-    <h2 id="h-5">Where should we send your matches?</h2>
+    <p class="eyebrow">Your details</p>
+    <h2 id="h-5">Where should we share your selection?</h2>
+    <p class="sub">Add your details and choose how you would prefer to hear from us.</p>
 
     <div class="fields">
       <div>
         <label class="field-label" for="fullName">Full name</label>
-        <input class="text-input" type="text" id="fullName" name="full-name" autocomplete="name" placeholder="Your name" required>
+        <input class="text-input" type="text" id="fullName" name="full-name" autocomplete="name" required>
         <p class="error" id="err-fullName">Add your name so we know who we're writing to.</p>
       </div>
       <div>
-        <label class="field-label" for="email">Email</label>
-        <input class="text-input" type="email" id="email" name="email" autocomplete="email" placeholder="you@example.com" required>
-        <p class="error" id="err-email">Add a valid email — it's where your matches arrive.</p>
+        <label class="field-label" for="phone">Mobile number</label>
+        <input class="text-input" type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" placeholder="+971" required>
+        <p class="error" id="err-phone">Add a mobile number we can reach you on.</p>
       </div>
       <div>
-        <label class="field-label" for="phone">Mobile number</label>
-        <input class="text-input" type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" placeholder="+971 50 123 4567" required>
-        <p class="error" id="err-phone">Add a mobile number we can reach you on.</p>
+        <label class="field-label" for="email">Email address</label>
+        <input class="text-input" type="email" id="email" name="email" autocomplete="email" placeholder="you@email.com" required>
+        <p class="error" id="err-email">Add a valid email — it's where your matches arrive.</p>
       </div>
     </div>
 
@@ -323,13 +369,13 @@ const OPTIONS = {
     ]
   },
   openOption: "Open to suggestions",
-  /* label shown → value sent */
+  /* label shown → value sent (values unchanged) */
   budget: [
-    { label: "500K – 1M", value: "500k-1M" },
-    { label: "1M – 3M",   value: "1M-3M" },
-    { label: "3M – 7M",   value: "3M-7M" },
-    { label: "7M – 15M",  value: "7M-15M" },
-    { label: "15M+",      value: "15M+" }
+    { label: "AED 500K – 1M", value: "500k-1M" },
+    { label: "AED 1M – 3M",   value: "1M-3M" },
+    { label: "AED 3M – 7M",   value: "3M-7M" },
+    { label: "AED 7M – 15M",  value: "7M-15M" },
+    { label: "AED 15M+",      value: "15M+" }
   ],
   offplan: ["Ready", "Off-plan", "No preference"],
   view: ["Sea", "Marina", "Beach", "Community", "No preference"]
@@ -414,17 +460,10 @@ function refreshCommunities() {
 /* ---------- progress ---------- */
 function renderProgress() {
   const bar = document.getElementById("progressBar");
-  bar.innerHTML = "";
-  for (let i = 1; i <= TOTAL; i++) {
-    const m = document.createElement("span");
-    m.className = "marker" + (i < current ? " done" : i === current ? " current" : "");
-    bar.appendChild(m);
-    if (i < TOTAL) {
-      const t = document.createElement("span");
-      t.className = "track" + (i < current ? " done" : "");
-      bar.appendChild(t);
-    }
-  }
+  const step = Math.min(current, TOTAL);
+  document.getElementById("progressFill").style.width = (step / TOTAL * 100) + "%";
+  document.getElementById("progressLabel").textContent = "Step " + step + " of " + TOTAL;
+  bar.style.display = current > TOTAL ? "none" : "";
 }
 
 /* ---------- navigation ---------- */
@@ -438,7 +477,7 @@ function goTo(step) {
   postHeight();
 }
 
-/* ---------- validation (every field required) ---------- */
+/* ---------- validation ---------- */
 function showError(id) { document.getElementById("err-" + id)?.classList.add("show"); postHeight(); }
 function clearError(id) { document.getElementById("err-" + id)?.classList.remove("show"); }
 
@@ -536,7 +575,6 @@ document.querySelectorAll("[data-next]").forEach(b =>
   b.addEventListener("click", () => { if (validateStep(current)) goTo(Number(b.dataset.next)); }));
 document.querySelectorAll("[data-back]").forEach(b =>
   b.addEventListener("click", () => goTo(Number(b.dataset.back))));
-
 document.getElementById("consent").addEventListener("change", () => clearError("consent"));
 ["fullName", "email", "phone"].forEach(id =>
   document.getElementById(id).addEventListener("input", () => clearError(id)));
