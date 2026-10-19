@@ -356,6 +356,9 @@
    ============================================================ */
 const WEBHOOK_URL = "https://engageteam.app.n8n.cloud/webhook/0f3f1214-f58b-4301-9b1f-7a03d9fc714d";
 
+/* Origin of the page that embeds this form; the tracking message is only delivered there. */
+const PARENT_ORIGIN = "https://www.bhomes.com";
+
 const OPTIONS = {
   propertyType: ["Apartment", "Villa", "Townhouse", "Penthouse", "Duplex"],
   bedrooms: ["Studio", "1", "2", "3", "4", "5+"],
@@ -547,35 +550,25 @@ async function submit() {
     });
     if (!res.ok) throw new Error("HTTP " + res.status);
 
-    
-const first = state.fullName.split(" ")[0];
-document.getElementById("doneName").textContent = first ? ", " + first : "";
+    const first = state.fullName.split(" ")[0];
+    document.getElementById("doneName").textContent = first ? ", " + first : "";
+    const where = state.communities[0] !== OPTIONS.openOption
+      ? state.communities.slice(0, 2).join(" and ")
+      : state.city;
+    document.getElementById("doneSummary").textContent =
+      `Your matches are being prepared, and a community specialist who knows ${where} will be in touch shortly.`;
 
-const where = state.communities[0] !== OPTIONS.openOption
-  ? state.communities.slice(0, 2).join(" and ")
-  : state.city;
+    /* Notify the embedding page */
+    try { window.parent.postMessage({ type: "bh-form-submitted", payload: buildPayload() }, "*"); } catch (e) {}
+    try { window.parent.postMessage({ type: "pocket_listing_submit" }, PARENT_ORIGIN); } catch (e) {}
 
-document.getElementById("doneSummary").textContent =
-  `Your matches are being prepared, and a community specialist who knows ${where} will be in touch shortly.`;
-
-// Existing form submission tracking
-try {
-  window.parent.postMessage(
-    { type: "bh-form-submitted", payload: buildPayload() },
-    "*"
-  );
-} catch (e) {}
-
-// Pocket listing tracking
-try {
-  window.parent.postMessage(
-    { type: "pocket_listing_submit" },
-    "https://www.bhomes.com"
-  );
-} catch (e) {}
-
-goTo(TOTAL + 1);
-
+    goTo(TOTAL + 1);
+  } catch (err) {
+    console.error("betterhomes form submit failed:", err);
+    showError("submit");
+    btn.disabled = false;
+    btn.textContent = "Send my matches";
+  }
 }
 
 /* ---------- iframe auto-height ---------- */
