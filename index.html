@@ -547,21 +547,35 @@ async function submit() {
     });
     if (!res.ok) throw new Error("HTTP " + res.status);
 
-    const first = state.fullName.split(" ")[0];
-    document.getElementById("doneName").textContent = first ? ", " + first : "";
-    const where = state.communities[0] !== OPTIONS.openOption
-      ? state.communities.slice(0, 2).join(" and ")
-      : state.city;
-    document.getElementById("doneSummary").textContent =
-      `Your matches are being prepared, and a community specialist who knows ${where} will be in touch shortly.`;
-    try { window.parent.postMessage({ type: "bh-form-submitted", payload: buildPayload() }, "*"); } catch (e) {}
-    goTo(TOTAL + 1);
-  } catch (err) {
-    console.error("betterhomes form submit failed:", err);
-    showError("submit");
-    btn.disabled = false;
-    btn.textContent = "Send my matches";
-  }
+    
+const first = state.fullName.split(" ")[0];
+document.getElementById("doneName").textContent = first ? ", " + first : "";
+
+const where = state.communities[0] !== OPTIONS.openOption
+  ? state.communities.slice(0, 2).join(" and ")
+  : state.city;
+
+document.getElementById("doneSummary").textContent =
+  `Your matches are being prepared, and a community specialist who knows ${where} will be in touch shortly.`;
+
+// Existing form submission tracking
+try {
+  window.parent.postMessage(
+    { type: "bh-form-submitted", payload: buildPayload() },
+    "*"
+  );
+} catch (e) {}
+
+// Pocket listing tracking
+try {
+  window.parent.postMessage(
+    { type: "pocket_listing_submit" },
+    "https://www.bhomes.com"
+  );
+} catch (e) {}
+
+goTo(TOTAL + 1);
+
 }
 
 /* ---------- iframe auto-height ---------- */
