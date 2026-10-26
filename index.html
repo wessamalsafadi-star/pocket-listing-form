@@ -6,346 +6,423 @@
 <meta name="theme-color" content="#1F343F">
 <title>Find a home that fits | betterhomes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
+  /* ============================================================
+     TOKENS — betterhomes design system (matches the Private Listings page)
+     ============================================================ */
   :root {
-    --slate: #1F343F;
-    --denim: #2C537A;
-    --powder: #7BA0B2;
-    --sand: #D9B9A0;
-    --mist: #EDE8E4;
-    --track: #DDD6D0;
-    --muted: #7E8890;
-    --salmon: #FF787A;
-    --white: #FFFFFF;
-    --font-head: "Ivy Mode", "Cormorant Garamond", Georgia, "Times New Roman", serif;
-    --font-body: "Ivy Epic", "Poppins", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+    --bh-slate-blue: #1F343F;
+    --bh-denim-blue: #2C537A;
+    --bh-powder-blue: #7BA0B2;
+    --bh-sand: #D9B9A0;
+    --bh-mist: #EDE8E4;
+    --bh-mist-deep: #E1D9D1;
+    --bh-salmon: #FF787A;
+    --bh-salmon-hover: #FF9295;
+    --bh-white: #FFFFFF;
+    --bh-error: #B4373A;
+
+    --font-sans: "Poppins", system-ui, -apple-system, "Segoe UI", Helvetica, sans-serif;
+    --font-serif: "IvyMode", "Cormorant Garamond", Georgia, "Times New Roman", serif;
+
+    --radius-xs: 3px;
+    --radius-btn: 6px;
+    --hairline: 1px;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { background: var(--white); }
+  @media (min-width: 1920px) { :root { font-size: 18px; } }
+  @media (min-width: 2560px) { :root { font-size: 20px; } }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  html, body { background: var(--bh-white); }
   body {
-    font-family: var(--font-body);
-    color: var(--slate);
-    line-height: 1.5;
-    padding: 24px clamp(12px, 3vw, 32px) 32px;
+    margin: 0;
+    color: var(--bh-slate-blue);
+    font-family: var(--font-sans);
+    font-weight: 400;
+    line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+    padding: 1.5rem clamp(0.75rem, 3vw, 2rem) 2rem;
+  }
+  h2, h3 { margin: 0; font-family: var(--font-serif); font-weight: 400; letter-spacing: -0.01em; line-height: 1.15; }
+  p { margin: 0; text-wrap: pretty; }
+  a { color: inherit; text-decoration: underline; text-underline-offset: 3px; transition: color 250ms var(--ease); }
+  a:hover { color: var(--bh-salmon); }
+
+  /* ---------- card ---------- */
+  .form-card {
+    width: 100%;
+    max-width: 80rem;
+    margin-inline: auto;
+    background: var(--bh-mist);
+    border-radius: 4px;
+    padding: clamp(1.75rem, 3.3vw, 3rem) clamp(1.25rem, 2.6vw, 2.375rem) clamp(1.75rem, 3vw, 2.75rem);
   }
 
-  .panel {
-    width: 100%; max-width: 860px; margin: 0 auto;
-    background: var(--mist);
-    border-radius: 20px;
-    padding: 44px clamp(24px, 5vw, 52px) 48px;
-  }
-
-  /* ---------- Progress ---------- */
-  .progress {
+  /* ---------- stepper ---------- */
+  .stepper {
     display: flex;
     align-items: center;
-    gap: 18px;
-    margin: 0 0 56px;
+    margin-block-end: clamp(2rem, 4.2vw, 3.75rem);
   }
-  .progress .track {
-    flex: 1; height: 3px;
-    background: var(--track);
-    border-radius: 3px;
-    overflow: hidden;
+  .diamond { clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); }
+  .stepper__node {
+    display: block;
+    flex: 0 0 auto;
+    background: var(--bh-denim-blue);
+    width: clamp(0.5rem, 0.8vw, 0.75rem);
+    aspect-ratio: 1;
+    transition: background-color 250ms var(--ease), width 250ms var(--ease);
   }
-  .progress .fill {
-    display: block; height: 100%;
-    background: var(--slate);
-    border-radius: 3px;
-    transition: width .35s ease;
-  }
-  .progress .label {
-    font-size: 12px;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--muted);
-    white-space: nowrap;
-  }
+  .stepper__node--active { background: var(--bh-sand); width: clamp(0.875rem, 1.4vw, 1.25rem); }
+  .stepper__rail { flex: 1 1 auto; height: var(--hairline); background: var(--bh-powder-blue); }
 
-  /* ---------- Steps ---------- */
+  /* ---------- steps ---------- */
   .step { display: none; }
-  .step.active { display: block; animation: rise .35s ease both; }
+  .step.active { display: block; animation: rise .35s var(--ease) both; }
   @keyframes rise {
     from { opacity: 0; transform: translateY(8px); }
     to   { opacity: 1; transform: none; }
   }
-  @media (prefers-reduced-motion: reduce) { .step.active { animation: none; } }
 
-  .eyebrow {
-    font-size: 13px;
-    letter-spacing: .16em;
-    text-transform: uppercase;
-    color: var(--denim);
-    margin-bottom: 14px;
-  }
-  h2 {
-    font-family: var(--font-head);
-    font-weight: 500;
-    font-size: clamp(30px, 4.2vw, 40px);
-    line-height: 1.15;
-    letter-spacing: -0.01em;
-    margin-bottom: 30px;
-  }
-  .sub {
-    font-size: 17px;
-    color: #4A5860;
-    max-width: 70ch;
-    margin: -20px 0 40px;
-  }
-  .group-label {
-    font-size: 12px;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 14px;
-  }
-  .group-label + .sub { margin: -4px 0 18px; }
-  .q {
-    font-family: var(--font-body);
-    font-weight: 400;
-    font-size: 19px;
-    line-height: 1.4;
-    margin-bottom: 16px;
-  }
-  fieldset { border: none; margin-bottom: 48px; }
-  fieldset legend { display: contents; }
-
-  /* ---------- Chips ---------- */
-  .chips { display: flex; flex-wrap: wrap; gap: 14px; }
-  .chip {
-    font-family: var(--font-body);
-    font-size: 17px;
-    padding: 15px 26px;
-    border: none;
-    background: var(--white);
-    color: var(--slate);
-    border-radius: 999px;
-    cursor: pointer;
-    transition: background .15s, color .15s, transform .1s;
-  }
-  .chip:hover { background: #F7F3F0; }
-  .chip:active { transform: scale(.98); }
-  .chip[aria-pressed="true"] { background: var(--slate); color: var(--white); }
-  .chip:focus-visible, .text-input:focus-visible, .btn:focus-visible,
-  .link-btn:focus-visible, input[type="checkbox"]:focus-visible {
-    outline: 3px solid var(--denim); outline-offset: 2px;
-  }
-
-  /* ---------- Text inputs ---------- */
-  .fields { display: grid; grid-template-columns: 1fr; gap: 28px; margin-bottom: 32px; }
+  /* ---------- type ---------- */
   .field-label {
     display: block;
-    font-size: 12px;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 12px;
+    font-size: clamp(0.875rem, 0.25vw + 0.8rem, 0.9375rem);
+    color: var(--bh-denim-blue);
   }
-  .text-input {
+  .question {
+    margin-block: clamp(0.75rem, 1.3vw, 1.125rem) clamp(1.25rem, 2.4vw, 2.125rem);
+    font-size: clamp(1.625rem, 2vw + 0.6rem, 2.5rem);
+  }
+  .step-help {
+    margin-block-start: clamp(0.5rem, 1vw, 0.875rem);
+    font-size: clamp(1rem, 0.3vw + 0.9rem, 1.0625rem);
+    color: var(--bh-slate-blue);
+  }
+  .sub-label { margin-block: clamp(1.5rem, 2.8vw, 2.5rem) clamp(0.5rem, 1vw, 0.875rem); }
+  .sub-label + .step-help { margin-block: 0 clamp(0.75rem, 1.4vw, 1.25rem); }
+  .question + .step-help { margin-block: calc(-1 * clamp(0.75rem, 1.6vw, 1.5rem)) 0; }
+
+  /* ---------- chips ---------- */
+  .chips {
+    display: grid;
+    grid-template-columns: repeat(var(--cols, 5), minmax(0, 1fr));
+    align-items: stretch;
+    gap: 3px;
+    margin-block-end: clamp(2rem, 3.9vw, 3.5rem);
+  }
+  .chips--3 { --cols: 3; }
+  .chips--5 { --cols: 5; }
+  .chips--6 { --cols: 6; }
+  .chips--flow { display: flex; flex-wrap: wrap; }
+  .chips--flow .chip { flex: 0 0 auto; padding-inline: 1.5rem; }
+  /* an error note directly after a chip group sits inside the group's bottom margin */
+  .chips + .error { margin-block: calc(-1 * clamp(1.5rem, 3.2vw, 3rem)) clamp(2rem, 3.9vw, 3.5rem); }
+  .chips + .note { margin-block: calc(-1 * clamp(1.5rem, 3.2vw, 3rem)) clamp(2rem, 3.9vw, 3.5rem); }
+
+  .chip {
+    /* the selected chip stands ~6px taller than its neighbours, as in the source */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-block: 3px;
+    padding-inline: 0.5rem;
+    border: 0;
+    border-radius: var(--radius-xs);
+    background: var(--bh-mist-deep);
+    color: var(--bh-slate-blue);
+    font-family: var(--font-sans);
+    font-size: clamp(0.875rem, 0.3vw + 0.75rem, 1rem);
+    min-height: clamp(2.375rem, 3.1vw, 2.75rem);
+    cursor: pointer;
+    transition: background-color 250ms var(--ease), margin 150ms var(--ease), opacity 250ms var(--ease);
+  }
+  .chip:hover { background: #d8cfc6; }
+  .chip[aria-pressed="true"] {
+    margin-block: 0;
+    background: var(--bh-slate-blue);
+    color: var(--bh-white);
+  }
+  .chip[aria-pressed="true"]:hover { background: #2d4451; }
+  .chip[aria-disabled="true"] {
+    opacity: 0.38;
+    cursor: not-allowed;
+    text-decoration: line-through;
+    text-decoration-thickness: 1px;
+  }
+  .chip[aria-disabled="true"]:hover { background: var(--bh-mist-deep); }
+  .chip:focus-visible, .input:focus-visible, .btn:focus-visible, .consent__box:focus-visible {
+    outline: 2px solid var(--bh-denim-blue); outline-offset: 2px;
+  }
+
+  /* ---------- inputs ---------- */
+  .field { margin-block-start: clamp(1.25rem, 2.2vw, 2rem); }
+  .input {
+    display: block;
     width: 100%;
-    font-family: var(--font-body);
-    font-size: 17px;
-    padding: 20px 22px;
-    border: 1.5px solid transparent;
-    border-radius: 12px;
-    background: var(--white);
-    color: var(--slate);
+    margin-block-start: clamp(0.5rem, 0.9vw, 0.75rem);
+    border: 0;
+    border-radius: 4px;
+    background: var(--bh-white);
+    color: var(--bh-slate-blue);
+    font-family: var(--font-sans);
+    font-size: clamp(0.9375rem, 0.3vw + 0.85rem, 1.0625rem);
+    min-height: clamp(2.75rem, 3.5vw, 3.0625rem);
+    padding-inline: 0.875rem;
   }
-  .text-input:focus { border-color: var(--slate); outline: none; }
-  .text-input::placeholder { color: #8E9AA1; }
+  .input:focus { outline: 2px solid var(--bh-denim-blue); outline-offset: 0; }
+  .input::placeholder { color: var(--bh-slate-blue); opacity: 0.55; }
 
-  /* ---------- Consent ---------- */
+  /* ---------- consent ---------- */
   .consent {
-    display: flex; gap: 14px; align-items: flex-start;
-    margin-bottom: 8px; max-width: 760px;
-    background: white;
-    padding: 20px;
-    border-radius: 15px;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    margin-block: clamp(1.25rem, 2.2vw, 2rem) clamp(1.5rem, 2.8vw, 2.5rem);
+    background: var(--bh-mist-deep);
+    padding: clamp(1rem, 1.9vw, 1.6875rem);
   }
-  .consent input[type="checkbox"] {
-    width: 20px; height: 20px; margin-top: 2px;
-    accent-color: var(--slate); flex-shrink: 0; cursor: pointer;
+  .consent__box {
+    flex: 0 0 auto;
+    appearance: none;
+    -webkit-appearance: none;
+    width: clamp(1.125rem, 1.5vw, 1.375rem);
+    aspect-ratio: 1;
+    margin: 0;
+    border: 0;
+    background: var(--bh-white);
+    cursor: pointer;
+    transition: background-color 250ms var(--ease);
   }
-  .consent label { font-size: 14px; line-height: 1.55; cursor: pointer; color: #4A5860; }
+  .consent__box:checked { background: var(--bh-slate-blue); }
+  .consent__text { font-size: 0.875rem; line-height: 1.5; color: var(--bh-slate-blue); cursor: pointer; }
+  .consent + .error { margin-block: calc(-1 * clamp(1rem, 2vw, 1.75rem)) clamp(1.5rem, 2.8vw, 2.5rem); }
 
-  /* ---------- Errors ---------- */
-  .error { display: none; font-size: 14px; color: #B4373A; margin-top: 12px; }
+  /* ---------- errors / notes ---------- */
+  .error { display: none; font-size: 0.875rem; line-height: 1.5; color: var(--bh-error); margin-block-start: 0.5rem; }
   .error.show { display: block; }
+  .note { display: none; font-size: 0.875rem; line-height: 1.5; color: var(--bh-denim-blue); }
+  .note.show { display: block; }
 
-  /* ---------- Buttons ---------- */
-  .actions { display: flex; align-items: center; gap: 28px; margin-top: 44px; }
+  /* ---------- buttons ---------- */
+  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: clamp(0.5rem, 0.9vw, 0.75rem); }
   .btn {
-    font-family: var(--font-body);
-    font-weight: 500;
-    font-size: 18px;
-    border: none; cursor: pointer;
-    padding: 20px 42px;
-    background: var(--salmon);
-    color: var(--white);
-    border-radius: 999px;
-    transition: filter .15s, opacity .15s, transform .1s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bh-salmon);
+    color: var(--bh-slate-blue);
+    border: 0;
+    border-radius: var(--radius-btn);
+    font-family: var(--font-sans);
+    font-size: clamp(0.9375rem, 0.25vw + 0.85rem, 1.0625rem);
+    font-weight: 400;
+    line-height: 1;
+    padding: 1rem 1.875rem;
+    cursor: pointer;
+    transition: background-color 250ms var(--ease), transform 150ms var(--ease), opacity 250ms var(--ease);
   }
-  .btn:hover { filter: brightness(1.04); }
-  .btn:active { transform: scale(.98); }
+  .btn:hover { background: var(--bh-salmon-hover); color: var(--bh-slate-blue); }
+  .btn:active { transform: scale(0.98); }
   .btn[disabled] { opacity: .6; cursor: wait; }
-  .link-btn {
-    font-family: var(--font-body);
-    font-size: 17px; background: none; border: none;
-    color: var(--denim); cursor: pointer;
-    text-decoration: underline; text-underline-offset: 4px; padding: 6px 2px;
+  .btn--ghost { background: var(--bh-mist); border: var(--hairline) solid var(--bh-salmon); }
+  .btn--ghost:hover { background: var(--bh-mist-deep); color: var(--bh-slate-blue); }
+
+  /* ---------- confirmation ---------- */
+  .done {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding-block: clamp(2rem, 4.4vw, 4rem) clamp(1rem, 2.5vw, 2.25rem);
+  }
+  .done__seal {
+    width: clamp(7.5rem, 13.6vw, 12.5rem);
+    aspect-ratio: 1;
+    background: var(--bh-slate-blue);
+    display: grid;
+    place-items: center;
+  }
+  .done__check {
+    width: clamp(1.75rem, 3vw, 2.75rem);
+    height: clamp(0.875rem, 1.5vw, 1.375rem);
+    border-inline-start: 3px solid var(--bh-sand);
+    border-block-end: 3px solid var(--bh-sand);
+    transform: rotate(-45deg) translate(6%, -18%);
+  }
+  .done__title {
+    margin-block-start: clamp(2rem, 4.3vw, 3.875rem);
+    font-size: clamp(1.875rem, 2.1vw + 0.7rem, 2.625rem);
+  }
+  .done .step-help { max-width: 60ch; }
+
+  /* desktop type sizes, as on the page */
+  @media (min-width: 48rem) {
+    .form-card .field-label { font-size: 0.875rem; }
+    .form-card .step-help { font-size: 0.875rem; }
+    .form-card .question { font-size: 1.625rem; }
+    .form-card .chip { font-size: 0.875rem; }
+    .form-card .btn { font-size: 0.875rem; }
   }
 
-  /* ---------- Success ---------- */
-  .success-mark {
-    width: 30px; height: 30px; background: var(--sand);
-    transform: rotate(45deg); margin: 8px 0 34px 8px;
+  /* mobile: chips wrap on content width */
+  @media (max-width: 47.99rem) {
+    body { padding: 0.75rem; }
+    .form-card { padding: 1.5rem 1rem 1.75rem; }
+    .actions { flex-wrap: nowrap; }
+    .actions .btn { padding-inline: 0.875rem; white-space: nowrap; }
+    .question { font-size: 1.75rem; }
+    .chips { display: flex; flex-wrap: wrap; margin-block-end: 2rem; }
+    .chip { flex: 1 1 auto; padding-inline: 0.875rem; }
+    .chips + .error, .chips + .note { margin-block: -1.5rem 2rem; }
+    .input { min-height: 2.75rem; }
   }
-  .success p { font-size: 17px; max-width: 60ch; margin-bottom: 14px; }
-  .success .proof { color: var(--denim); font-size: 15px; margin-top: 26px; }
 
-  @media (max-width: 600px) {
-    body { padding: 12px; }
-    .panel { padding: 32px 22px 36px; border-radius: 16px; }
-    .progress { margin-bottom: 40px; }
-    fieldset { margin-bottom: 40px; }
-    .chips { gap: 10px; }
-    .chip { font-size: 16px; padding: 13px 20px; }
-    .actions { flex-wrap: wrap; gap: 18px; margin-top: 32px; }
-    .btn { padding: 17px 34px; }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition-duration: 1ms !important; }
+    .step.active { animation: none; }
   }
 </style>
 </head>
 <body>
-<div class="panel">
+<div class="form-card">
 
-  <div class="progress" id="progressBar" aria-hidden="true">
-    <span class="track"><span class="fill" id="progressFill"></span></span>
-    <span class="label" id="progressLabel"></span>
+  <div class="stepper" id="stepper" aria-hidden="true">
+    <span class="stepper__node diamond" data-step="1"></span>
+    <span class="stepper__rail"></span>
+    <span class="stepper__node diamond" data-step="2"></span>
+    <span class="stepper__rail"></span>
+    <span class="stepper__node diamond" data-step="3"></span>
+    <span class="stepper__rail"></span>
+    <span class="stepper__node diamond" data-step="4"></span>
+    <span class="stepper__rail"></span>
+    <span class="stepper__node diamond" data-step="5"></span>
   </div>
 
   <!-- ============ STEP 1 : Property ============ -->
-  <section class="step active" id="step1" aria-labelledby="h-1">
-    <p class="eyebrow">Property</p>
-    <fieldset>
-      <legend><h2 id="h-1">Which type of property are you considering?</h2></legend>
-      <div class="chips" id="propertyType" data-multi="true"></div>
-      <p class="error" id="err-propertyType">Choose at least one property type to continue.</p>
-    </fieldset>
-    <fieldset>
-      <legend><h2>How many bedrooms would you prefer?</h2></legend>
-      <div class="chips" id="bedrooms" data-multi="false"></div>
-      <p class="error" id="err-bedrooms">Choose a bedroom option to continue.</p>
-    </fieldset>
-    <div class="actions">
-      <button class="btn" data-next="2">Continue</button>
-    </div>
+  <section class="step active" id="step1" aria-labelledby="q-property">
+    <span class="field-label">Property</span>
+    <h3 class="question" id="q-property">Which type of property are you considering?</h3>
+    <div class="chips chips--5" id="propertyType" data-multi="true" role="group" aria-labelledby="q-property"></div>
+    <p class="error" id="err-propertyType">Choose at least one property type to continue.</p>
+
+    <h3 class="question" id="q-bedrooms">How many bedrooms would you prefer?</h3>
+    <div class="chips chips--6" id="bedrooms" data-multi="false" role="group" aria-labelledby="q-bedrooms"></div>
+    <p class="note" id="note-bedrooms">Studios are only available for apartments.</p>
+    <p class="error" id="err-bedrooms">Choose a bedroom option to continue.</p>
+
+    <p class="actions">
+      <button class="btn" type="button" data-next="2">Continue</button>
+    </p>
   </section>
 
   <!-- ============ STEP 2 : Location ============ -->
-  <section class="step" id="step2" aria-labelledby="h-2">
-    <p class="eyebrow">Location</p>
-    <h2 id="h-2">Where would you like to focus your search?</h2>
-    <p class="sub">Choose the locations you would like us to prioritise.</p>
-    <fieldset>
-      <legend><p class="group-label">Preferred city</p></legend>
-      <div class="chips" id="city" data-multi="false"></div>
-      <p class="error" id="err-city">Choose a city to continue.</p>
-    </fieldset>
-    <fieldset id="communitiesBlock" hidden>
-      <legend><p class="group-label">Preferred communities</p></legend>
-      <p class="sub">Choose the communities that interest you, or keep your options open.</p>
-      <div class="chips" id="communities" data-multi="true"></div>
+  <section class="step" id="step2" aria-labelledby="q-location">
+    <span class="field-label">Location</span>
+    <h3 class="question" id="q-location">Where would you like to focus your search?</h3>
+    <p class="step-help">Choose the locations you would like us to prioritise.</p>
+
+    <span class="field-label sub-label" id="q-city">Preferred city</span>
+    <div class="chips chips--3" id="city" data-multi="false" role="group" aria-labelledby="q-city"></div>
+    <p class="error" id="err-city">Choose a city to continue.</p>
+
+    <div id="communitiesBlock" hidden>
+      <span class="field-label sub-label" id="q-communities">Preferred communities</span>
+      <p class="step-help">Choose the communities that interest you, or keep your options open.</p>
+      <div class="chips chips--flow" id="communities" data-multi="true" role="group" aria-labelledby="q-communities"></div>
       <p class="error" id="err-communities">Choose at least one community — or "Open to suggestions".</p>
-    </fieldset>
-    <div class="actions">
-      <button class="btn" data-next="3">Continue</button>
-      <button class="link-btn" data-back="1">Back</button>
     </div>
+
+    <p class="actions">
+      <button class="btn btn--ghost" type="button" data-back="1">Back</button>
+      <button class="btn" type="button" data-next="3">Continue</button>
+    </p>
   </section>
 
   <!-- ============ STEP 3 : Budget ============ -->
-  <section class="step" id="step3" aria-labelledby="h-3">
-    <p class="eyebrow">Price range</p>
-    <h2 id="h-3">What purchase range are you considering?</h2>
-    <p class="sub">This helps us refine the selection around properties that suit your plans.</p>
-    <fieldset>
-      <legend><p class="group-label">Preferred purchase range</p></legend>
-      <div class="chips" id="budget" data-multi="false"></div>
-      <p class="error" id="err-budget">Choose a budget range to continue.</p>
-    </fieldset>
-    <div class="actions">
-      <button class="btn" data-next="4">Continue</button>
-      <button class="link-btn" data-back="2">Back</button>
-    </div>
+  <section class="step" id="step3" aria-labelledby="q-budget">
+    <span class="field-label">Price range</span>
+    <h3 class="question" id="q-budget">What purchase range are you considering?</h3>
+    <p class="step-help">This helps us refine the selection around properties that suit your plans.</p>
+
+    <span class="field-label sub-label" id="q-price">Preferred purchase range</span>
+    <div class="chips chips--5" id="budget" data-multi="false" role="group" aria-labelledby="q-price"></div>
+    <p class="error" id="err-budget">Choose a budget range to continue.</p>
+
+    <p class="actions">
+      <button class="btn btn--ghost" type="button" data-back="2">Back</button>
+      <button class="btn" type="button" data-next="4">Continue</button>
+    </p>
   </section>
 
   <!-- ============ STEP 4 : Preferences ============ -->
-  <section class="step" id="step4" aria-labelledby="h-4">
-    <p class="eyebrow">Your preferences</p>
-    <h2 id="h-4">A few finer details.</h2>
-    <p class="sub">Optional preferences help us shape the selection more closely around you.</p>
-    <fieldset>
-      <legend><p class="q">Would you prefer a ready home or an off-plan property?</p></legend>
-      <div class="chips" id="offplan" data-multi="false"></div>
-      <p class="error" id="err-offplan">Choose an option to continue.</p>
-    </fieldset>
-    <fieldset>
-      <legend><p class="q">Is there a particular view you prefer?</p></legend>
-      <div class="chips" id="view" data-multi="true"></div>
-      <p class="error" id="err-view">Choose at least one view to continue.</p>
-    </fieldset>
-    <div class="actions">
-      <button class="btn" data-next="5">Continue</button>
-      <button class="link-btn" data-back="3">Back</button>
-    </div>
+  <section class="step" id="step4" aria-labelledby="q-prefs">
+    <span class="field-label">Your preferences</span>
+    <h3 class="question" id="q-prefs">A few finer details.</h3>
+    <p class="step-help">Optional preferences help us shape the selection more closely around you.</p>
+
+    <span class="field-label sub-label" id="q-tenure">Would you prefer a ready home or an off-plan property?</span>
+    <div class="chips chips--3" id="offplan" data-multi="false" role="group" aria-labelledby="q-tenure"></div>
+    <p class="error" id="err-offplan">Choose an option to continue.</p>
+
+    <span class="field-label sub-label" id="q-view">Is there a particular view you prefer?</span>
+    <div class="chips chips--5" id="view" data-multi="true" role="group" aria-labelledby="q-view"></div>
+    <p class="error" id="err-view">Choose at least one view to continue.</p>
+
+    <p class="actions">
+      <button class="btn btn--ghost" type="button" data-back="3">Back</button>
+      <button class="btn" type="button" data-next="5">Continue</button>
+    </p>
   </section>
 
   <!-- ============ STEP 5 : Contact ============ -->
-  <section class="step" id="step5" aria-labelledby="h-5">
-    <p class="eyebrow">Your details</p>
-    <h2 id="h-5">Where should we share your selection?</h2>
-    <p class="sub">Add your details and choose how you would prefer to hear from us.</p>
+  <section class="step" id="step5" aria-labelledby="q-details">
+    <span class="field-label">Your details</span>
+    <h3 class="question" id="q-details">Where should we share your selection?</h3>
+    <p class="step-help">Add your details and choose how you would prefer to hear from us.</p>
 
-    <div class="fields">
-      <div>
-        <label class="field-label" for="fullName">Full name</label>
-        <input class="text-input" type="text" id="fullName" name="full-name" autocomplete="name" required>
-        <p class="error" id="err-fullName">Add your name so we know who we're writing to.</p>
-      </div>
-      <div>
-        <label class="field-label" for="phone">Mobile number</label>
-        <input class="text-input" type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" placeholder="+971" required>
-        <p class="error" id="err-phone">Add a mobile number we can reach you on.</p>
-      </div>
-      <div>
-        <label class="field-label" for="email">Email address</label>
-        <input class="text-input" type="email" id="email" name="email" autocomplete="email" placeholder="you@email.com" required>
-        <p class="error" id="err-email">Add a valid email — it's where your matches arrive.</p>
-      </div>
+    <div class="field">
+      <label class="field-label" for="fullName">Full name</label>
+      <input class="input" type="text" id="fullName" name="full-name" autocomplete="name" required>
+      <p class="error" id="err-fullName">Add your name so we know who we're writing to.</p>
+    </div>
+    <div class="field">
+      <label class="field-label" for="phone">Mobile number</label>
+      <input class="input" type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" placeholder="+971" required>
+      <p class="error" id="err-phone">Add a mobile number we can reach you on.</p>
+    </div>
+    <div class="field">
+      <label class="field-label" for="email">Email address</label>
+      <input class="input" type="email" id="email" name="email" autocomplete="email" placeholder="you@email.com" required>
+      <p class="error" id="err-email">Add a valid email — it's where your matches arrive.</p>
     </div>
 
     <div class="consent">
-      <input type="checkbox" id="consent" name="consent" required>
-      <label for="consent">I'm happy to be contacted about relevant properties and my enquiry, and for my details to be processed in line with the <a href="https://www.bhomes.com/en/privacy" target="_blank">privacy policy</a>.</label>
+      <input class="consent__box" type="checkbox" id="consent" name="consent" required>
+      <label class="consent__text" for="consent">I'm happy to be contacted about relevant properties and my enquiry, and for my details to be processed in line with the <a href="https://www.bhomes.com/en/privacy" target="_blank" rel="noopener">privacy policy</a>.</label>
     </div>
     <p class="error" id="err-consent">We need your consent before we can be in touch.</p>
     <p class="error" id="err-submit">Something went wrong sending your details. Please try again in a moment.</p>
 
-    <div class="actions">
-      <button class="btn" id="submitBtn">Send my matches</button>
-      <button class="link-btn" data-back="4">Back</button>
-    </div>
+    <p class="actions">
+      <button class="btn btn--ghost" type="button" data-back="4">Back</button>
+      <button class="btn" type="button" id="submitBtn">Submit my preferences</button>
+    </p>
   </section>
 
   <!-- ============ SUCCESS ============ -->
-  <section class="step success" id="stepDone" aria-labelledby="h-done">
-    <div class="success-mark" aria-hidden="true"></div>
-    <h2 id="h-done">Thank you<span id="doneName"></span>.</h2>
-    <p id="doneSummary">Your matches are being prepared, and a community specialist will be in touch shortly.</p>
-    <p class="proof">Since 1986, we've guided clients through every UAE market cycle — over 250,000 homes sold and rented. Yours is next.</p>
+  <section class="step" id="stepDone" aria-labelledby="h-done">
+    <div class="done">
+      <div class="done__seal diamond"><span class="done__check" aria-hidden="true"></span></div>
+      <h3 class="done__title" id="h-done">Thank you<span id="doneName"></span>.</h3>
+      <p class="step-help" id="doneSummary">Your matches are being prepared, and a community specialist will be in touch shortly.</p>
+    </div>
   </section>
 
 </div>
@@ -377,10 +454,10 @@ const OPTIONS = {
   openOption: "Open to suggestions",
   /* label shown → value sent (values unchanged) */
   budget: [
-    { label: "AED 500K – 1M", value: "500k-1M" },
-    { label: "AED 1M – 3M",   value: "1M-3M" },
-    { label: "AED 3M – 7M",   value: "3M-7M" },
-    { label: "AED 7M – 15M",  value: "7M-15M" },
+    { label: "AED 500K - 1M", value: "500k-1M" },
+    { label: "AED 1M - 3M",   value: "1M-3M" },
+    { label: "AED 3M - 7M",   value: "3M-7M" },
+    { label: "AED 7M - 15M",  value: "7M-15M" },
     { label: "AED 15M+",      value: "15M+" }
   ],
   offplan: ["Ready", "Off-plan", "No preference"],
@@ -389,6 +466,11 @@ const OPTIONS = {
 
 /* Options that clear the rest of their group when selected */
 const EXCLUSIVE = { communities: OPTIONS.openOption, view: "No preference" };
+
+/* Rule: these property types have no studio layout, so "Studio" is
+   unavailable in the bedrooms question whenever any of them is selected. */
+const NO_STUDIO_TYPES = ["Villa", "Townhouse", "Penthouse", "Duplex"];
+const STUDIO = "Studio";
 
 const state = {
   propertyType: [],
@@ -420,6 +502,14 @@ function isSelected(groupId, v) {
   return Array.isArray(val) ? val.includes(v) : val === v;
 }
 
+function studioBlocked() {
+  return state.propertyType.some(t => NO_STUDIO_TYPES.includes(t));
+}
+
+function isDisabled(groupId, v) {
+  return groupId === "bedrooms" && v === STUDIO && studioBlocked();
+}
+
 /* ---------- chip rendering ---------- */
 function renderChips(groupId) {
   const el = document.getElementById(groupId);
@@ -427,12 +517,17 @@ function renderChips(groupId) {
   el.innerHTML = "";
   currentOptions(groupId).forEach(o => {
     const v = valueOf(o);
+    const disabled = isDisabled(groupId, v);
     const b = document.createElement("button");
     b.type = "button";
     b.className = "chip";
     b.textContent = labelOf(o);
     b.setAttribute("aria-pressed", isSelected(groupId, v) ? "true" : "false");
-    b.addEventListener("click", () => toggle(groupId, v, multi));
+    if (disabled) {
+      b.setAttribute("aria-disabled", "true");
+      b.title = "Studios are only available for apartments";
+    }
+    b.addEventListener("click", () => { if (!disabled) toggle(groupId, v, multi); });
     el.appendChild(b);
   });
 }
@@ -454,7 +549,23 @@ function toggle(groupId, v, multi) {
   }
   renderChips(groupId);
   clearError(groupId);
+  if (groupId === "propertyType") applyStudioRule();
   postHeight();
+}
+
+/* When a villa / townhouse / penthouse / duplex is chosen, drop a selected
+   Studio and show why; re-render the bedroom chips so Studio greys out. */
+function applyStudioRule() {
+  const blocked = studioBlocked();
+  const note = document.getElementById("note-bedrooms");
+  if (blocked && state.bedrooms === STUDIO) {
+    state.bedrooms = null;
+    note.textContent = "Studios are only available for apartments — your bedroom choice has been cleared.";
+  } else {
+    note.textContent = "Studios are only available for apartments.";
+  }
+  note.classList.toggle("show", blocked);
+  renderChips("bedrooms");
 }
 
 function refreshCommunities() {
@@ -463,13 +574,11 @@ function refreshCommunities() {
   if (state.city) renderChips("communities");
 }
 
-/* ---------- progress ---------- */
+/* ---------- stepper ---------- */
 function renderProgress() {
-  const bar = document.getElementById("progressBar");
-  const step = Math.min(current, TOTAL);
-  document.getElementById("progressFill").style.width = (step / TOTAL * 100) + "%";
-  document.getElementById("progressLabel").textContent = "Step " + step + " of " + TOTAL;
-  bar.style.display = current > TOTAL ? "none" : "";
+  const bar = document.getElementById("stepper");
+  bar.querySelectorAll(".stepper__node").forEach(n =>
+    n.classList.toggle("stepper__node--active", Number(n.dataset.step) === current));
 }
 
 /* ---------- navigation ---------- */
@@ -492,7 +601,7 @@ function validateStep(step) {
   const need = (cond, id) => { cond ? clearError(id) : (showError(id), ok = false); };
   if (step === 1) {
     need(state.propertyType.length > 0, "propertyType");
-    need(!!state.bedrooms, "bedrooms");
+    need(!!state.bedrooms && !(state.bedrooms === STUDIO && studioBlocked()), "bedrooms");
   }
   if (step === 2) {
     need(!!state.city, "city");
@@ -567,7 +676,7 @@ async function submit() {
     console.error("betterhomes form submit failed:", err);
     showError("submit");
     btn.disabled = false;
-    btn.textContent = "Send my matches";
+    btn.textContent = "Submit my preferences";
   }
 }
 
