@@ -174,6 +174,123 @@
     outline: 2px solid var(--bh-denim-blue); outline-offset: 2px;
   }
 
+  /* ---------- dropdown (communities) ---------- */
+  .dropdown { margin-block-end: clamp(2rem, 3.9vw, 3.5rem); }
+  .dropdown + .error { margin-block: calc(-1 * clamp(1.5rem, 3.2vw, 3rem)) clamp(2rem, 3.9vw, 3.5rem); }
+  .dropdown__trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    width: 100%;
+    border: 0;
+    border-radius: 4px;
+    background: var(--bh-white);
+    color: var(--bh-slate-blue);
+    font-family: var(--font-sans);
+    font-size: clamp(0.9375rem, 0.3vw + 0.85rem, 1.0625rem);
+    min-height: clamp(2.75rem, 3.5vw, 3.0625rem);
+    padding-inline: 0.875rem;
+    text-align: left;
+    cursor: pointer;
+    transition: box-shadow 250ms var(--ease);
+  }
+  .dropdown__trigger:hover { box-shadow: inset 0 0 0 1px var(--bh-powder-blue); }
+  .dropdown__trigger[aria-expanded="true"] { box-shadow: inset 0 0 0 2px var(--bh-denim-blue); }
+  .dropdown__trigger:focus-visible { outline: 2px solid var(--bh-denim-blue); outline-offset: 2px; }
+  .dropdown__label { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dropdown__label--placeholder { opacity: 0.55; }
+  .dropdown__caret {
+    flex: 0 0 auto;
+    width: 0.5rem;
+    aspect-ratio: 1;
+    border-inline-end: 1.5px solid var(--bh-denim-blue);
+    border-block-end: 1.5px solid var(--bh-denim-blue);
+    transform: translateY(-20%) rotate(45deg);
+    transition: transform 250ms var(--ease);
+  }
+  .dropdown__trigger[aria-expanded="true"] .dropdown__caret { transform: translateY(20%) rotate(225deg); }
+
+  /* panel sits in the normal flow so the embedding iframe can grow to fit it */
+  .dropdown__panel {
+    margin-block-start: 3px;
+    background: var(--bh-white);
+    border-radius: 4px;
+    padding: 0.5rem;
+    animation: rise .25s var(--ease) both;
+  }
+  .dropdown__search { margin-block-start: 0; background: var(--bh-mist); min-height: 2.5rem; }
+  .dropdown__search::-webkit-search-cancel-button { -webkit-appearance: none; }
+  .dropdown__list {
+    margin-block-start: 0.5rem;
+    max-height: 16rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--bh-powder-blue) transparent;
+  }
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    width: 100%;
+    border: 0;
+    border-radius: var(--radius-xs);
+    background: transparent;
+    color: var(--bh-slate-blue);
+    font-family: var(--font-sans);
+    font-size: clamp(0.875rem, 0.3vw + 0.75rem, 1rem);
+    text-align: left;
+    padding: 0.55rem 0.625rem;
+    cursor: pointer;
+    transition: background-color 150ms var(--ease);
+  }
+  .option:hover, .option:focus-visible { background: var(--bh-mist); outline: none; }
+  .option[aria-selected="true"] { background: var(--bh-mist-deep); }
+  .option__box {
+    flex: 0 0 auto;
+    width: 1rem;
+    aspect-ratio: 1;
+    background: var(--bh-mist-deep);
+    display: grid;
+    place-items: center;
+    transition: background-color 150ms var(--ease);
+  }
+  .option[aria-selected="true"] .option__box { background: var(--bh-slate-blue); }
+  .option__box::after {
+    content: "";
+    width: 0.5rem;
+    height: 0.25rem;
+    border-inline-start: 2px solid var(--bh-sand);
+    border-block-end: 2px solid var(--bh-sand);
+    transform: translateY(-15%) rotate(-45deg);
+    opacity: 0;
+  }
+  .option[aria-selected="true"] .option__box::after { opacity: 1; }
+  .option--open { border-block-end: var(--hairline) solid var(--bh-mist-deep); border-radius: 0; margin-block-end: 0.25rem; }
+  .dropdown__empty { padding: 0.75rem 0.625rem; font-size: 0.875rem; color: var(--bh-denim-blue); }
+
+  /* selected communities, shown as removable tags under the trigger */
+  .tags { display: flex; flex-wrap: wrap; gap: 3px; }
+  .tags:not(:empty) { margin-block-start: 0.625rem; }
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 0;
+    border-radius: var(--radius-xs);
+    background: var(--bh-slate-blue);
+    color: var(--bh-white);
+    font-family: var(--font-sans);
+    font-size: clamp(0.8125rem, 0.25vw + 0.7rem, 0.875rem);
+    padding: 0.45rem 0.75rem;
+    cursor: pointer;
+    transition: background-color 250ms var(--ease);
+  }
+  .tag:hover { background: #2d4451; }
+  .tag__x { font-size: 1.1em; line-height: 1; opacity: 0.7; }
+  .tag:hover .tag__x { opacity: 1; }
+
   /* ---------- inputs ---------- */
   .field { margin-block-start: clamp(1.25rem, 2.2vw, 2rem); }
   .input {
@@ -322,8 +439,8 @@
   <section class="step active" id="step1" aria-labelledby="q-property">
     <span class="field-label">Property</span>
     <h3 class="question" id="q-property">Which type of property are you considering?</h3>
-    <div class="chips chips--5" id="propertyType" data-multi="true" role="group" aria-labelledby="q-property"></div>
-    <p class="error" id="err-propertyType">Choose at least one property type to continue.</p>
+    <div class="chips chips--5" id="propertyType" data-multi="false" role="group" aria-labelledby="q-property"></div>
+    <p class="error" id="err-propertyType">Choose a property type to continue.</p>
 
     <h3 class="question" id="q-bedrooms">How many bedrooms would you prefer?</h3>
     <div class="chips chips--6" id="bedrooms" data-multi="false" role="group" aria-labelledby="q-bedrooms"></div>
@@ -348,7 +465,20 @@
     <div id="communitiesBlock" hidden>
       <span class="field-label sub-label" id="q-communities">Preferred communities</span>
       <p class="step-help">Choose the communities that interest you, or keep your options open.</p>
-      <div class="chips chips--flow" id="communities" data-multi="true" role="group" aria-labelledby="q-communities"></div>
+
+      <div class="dropdown" id="communitiesDropdown">
+        <button class="dropdown__trigger" type="button" id="communitiesTrigger"
+                aria-haspopup="listbox" aria-expanded="false" aria-controls="communitiesPanel" aria-labelledby="q-communities">
+          <span class="dropdown__label" id="communitiesLabel">Select communities</span>
+          <span class="dropdown__caret" aria-hidden="true"></span>
+        </button>
+        <div class="dropdown__panel" id="communitiesPanel" hidden>
+          <input class="input dropdown__search" type="search" id="communitiesSearch" placeholder="Search communities" autocomplete="off" aria-label="Search communities">
+          <div class="dropdown__list" id="communities" role="listbox" aria-multiselectable="true" aria-labelledby="q-communities"></div>
+          <p class="dropdown__empty" id="communitiesEmpty" hidden>No communities match that search.</p>
+        </div>
+        <div class="tags" id="communitiesTags" aria-live="polite"></div>
+      </div>
       <p class="error" id="err-communities">Choose at least one community — or "Open to suggestions".</p>
     </div>
 
@@ -453,15 +583,65 @@ const OPTIONS = {
   propertyType: ["Apartment", "Villa", "Townhouse", "Penthouse", "Duplex"],
   bedrooms: ["Studio", "1", "2", "3", "4", "5+"],
   city: ["Dubai", "Abu Dhabi"],
+  /* Full community list per city, alphabetical */
   communities: {
     "Dubai": [
-      "Dubai Marina", "Downtown Dubai", "Palm Jumeirah", "Business Bay",
-      "Jumeirah Village Circle", "Dubai Hills Estate", "Arabian Ranches",
-      "Jumeirah Beach Residence", "Emirates Hills", "Meydan"
+      "Academic City", "Al Aweer", "Al Badaa", "Al Barari", "Al Barsha", "Al Furjan",
+      "Al Garhoud", "Al Jaddaf", "Al Jafiliya", "Al Karama", "Al Khawaneej", "Al Lisaili",
+      "Al Manara", "Al Mina", "Al Mizhar", "Al Muhaisnah", "Al Nahda", "Al Quoz",
+      "Al Qusais", "Al Rashidiya", "Al Rowaiyah 2", "Al Safa", "Al Satwa", "Al Shindagah",
+      "Al Sufouh", "Al Twar", "Al Warqa'a", "Al Warsan", "Al Wasl", "Al Yelayiss 1",
+      "Al Yelayiss 2", "Arabian Ranches", "Arabian Ranches 2", "Arabian Ranches 3", "Arjan",
+      "Barsha Heights", "Bawadi", "Bluewaters", "Bukadra", "Bur Dubai", "Business Bay",
+      "City of Arabia", "City Walk", "Culture Village", "DAMAC Hills", "Damac Hills 2",
+      "Damac Lagoons", "Deira", "DIFC", "Discovery Gardens", "Downtown Dubai",
+      "Downtown Jebel Ali", "Dragon City", "Dubai Airport Freezone", "Dubai Creek Harbour",
+      "Dubai Design District", "Dubai Festival City", "Dubai Harbour", "Dubai Hills Estate",
+      "Dubai Industrial City", "Dubai Internet City", "Dubai Investment Park", "Dubai Islands",
+      "Dubai Land", "Dubai Land Residence Complex", "Dubai Lifestyle City", "Dubai Marina",
+      "Dubai Media City", "Dubai Outsource Zone", "Dubai Pearl", "Dubai Production City",
+      "Dubai Promenade", "Dubai Science Park", "Dubai Silicon Oasis", "Dubai South",
+      "Dubai Sports City", "Dubai Studio City", "Dubai Waterfront", "DuBiotech",
+      "Emirates Golf Club", "Emirates Hills", "Emirates Hills 2", "Expo City", "Eye Park",
+      "Falcon City of Wonders", "Forbidden City", "Global Village", "Golf City", "Greens",
+      "Hatta", "International City", "Jebel Ali", "Jumeirah", "Jumeirah Beach Residence",
+      "Jumeirah Golf Estates", "Jumeirah Islands", "Jumeirah Lake Towers", "Jumeirah Park",
+      "Jumeirah Village Circle", "Jumeirah Village Triangle", "Living Legends", "Liwan 2",
+      "Maritime City", "Meadows", "Meydan", "Mina Rashid", "Mirdif", "Mizin",
+      "Mohammad Bin Rashid Gardens", "Mohammed Bin Rashid City", "Motor City", "Mudon",
+      "Murqquab", "Mushrif Park", "Nad Al Sheba", "Nadd Al Hammar", "Old Town",
+      "Oud Al Muteena", "Pacific Village", "Palm Jebel Ali", "Palm Jumeirah", "Ras Al Khor",
+      "Reem", "Sheikh Zayed Road", "Technology Park", "The Gardens",
+      "The Heights Country Club & Wellness", "The Hills", "The Lakes", "The Oasis by Emaar",
+      "The Springs", "The Sustainable City", "The Valley", "The Villa", "The Views",
+      "The World Islands", "Tilal Al Ghaf", "Town Square", "Umm Al Sheif", "Umm Hurair",
+      "Umm Ramool", "Umm Suqeim", "Wadi Al Amardi", "Wadi Al Safa 2", "Wadi Al Safa 3",
+      "Wadi Al Safa 5", "Wadi Al Safa 7", "Wadi Alshabak", "Wasl Gate", "World Trade Center",
+      "Zabeel"
     ],
     "Abu Dhabi": [
-      "Yas Island", "Saadiyat Island", "Al Reem Island", "Al Raha Beach",
-      "Khalifa City", "Masdar City", "Al Reef", "Corniche Area"
+      "Abu Dhabi Gate City", "Airport Road", "Al Ajban", "Al Aman", "Al Badaa", "Al Bahia",
+      "Al Baraha", "Al Bateen", "Al Danah", "Al Dhafrah", "Al Fahid", "Al Falah City",
+      "Al Ghadeer", "Al Gurm West", "Al Hudayriat Island", "Al Ittihad Road",
+      "Al Jubail Island", "Al Karamah", "Al Khalidiya", "Al Khatim", "Al Maffraq",
+      "Al Manaseer", "Al Manhal", "Al Maqtaa", "Al Markaziyah", "Al Maryah",
+      "Al Maryah Island", "Al Mina", "Al Mirfa", "Al Muntazah", "Al Mushrif", "Al Nahda",
+      "Al Nahyan", "Al Nahyan Camp", "Al Najda Street", "Al Qurm", "Al Raha Beach",
+      "Al Raha Gardens", "Al Raha Golf Gardens", "Al Rahba", "Al Rawdah", "Al Rayhan",
+      "Al Reef", "Al Reem Island", "Al Ruwais", "Al Salam Street", "Al Samha", "Al Shahama",
+      "Al Shalila", "Al Shamkha", "Al Shawamekh", "Al Sila'a", "Al Tibbiya", "Al Wahda",
+      "Al Wathba", "Al Zaab", "Al Zahiyah", "Al Zahraa", "Baniyas", "Between Two Bridges",
+      "Bu Krayyah", "Building Materials City", "Capital Centre", "City Downtown",
+      "Corniche Road", "Dalma Island", "Dana Island", "Danet Abu Dhabi", "Defense Road",
+      "Desert Village", "Eastern Road", "Electra Street", "Fahid Island", "Ghantoot",
+      "Grand Mosque District", "Hamdan Street", "Hameem", "Happiness Island", "Hydra Village",
+      "Jawazat Street", "Khalifa City", "Khalifa Street", "Liwa", "Lulu Island",
+      "Madinat Al Riyad", "Madinat Zayed", "Mafraq Industrial Area", "Marina Village",
+      "Masdar City", "Mina Zayed", "Mohamed Bin Zayed City", "Muroor Area", "Mussafah",
+      "Nareel Island", "Nurai Island", "Rabdan", "Ramhan Island", "Rawdhat Abu Dhabi",
+      "Rimah", "Saadiyat Island", "Sas Al Nakheel", "Shakhbout City", "The Marina",
+      "Tourist Club Area", "Umm Al Nar", "Yas Island", "Zayed Military City",
+      "Zayed Sports City"
     ]
   },
   openOption: "Open to suggestions",
@@ -480,13 +660,18 @@ const OPTIONS = {
 /* Options that clear the rest of their group when selected */
 const EXCLUSIVE = { communities: OPTIONS.openOption, view: "No preference" };
 
-/* Rule: these property types have no studio layout, so "Studio" is
-   unavailable in the bedrooms question whenever any of them is selected. */
-const NO_STUDIO_TYPES = ["Villa", "Townhouse", "Penthouse", "Duplex"];
-const STUDIO = "Studio";
+/* Rule: bedroom options that are unavailable for a given property type.
+   Villas have no studio or 1-bedroom layout; townhouses, penthouses and
+   duplexes have no studio layout. Apartments allow everything. */
+const BEDROOM_RULES = {
+  "Villa":     ["Studio", "1"],
+  "Townhouse": ["Studio"],
+  "Penthouse": ["Studio"],
+  "Duplex":    ["Studio"]
+};
 
 const state = {
-  propertyType: [],
+  propertyType: null,
   bedrooms: null,
   city: null,
   communities: [],
@@ -505,7 +690,8 @@ const valueOf = o => (typeof o === "string" ? o : o.value);
 
 function currentOptions(groupId) {
   if (groupId === "communities") {
-    return state.city ? OPTIONS.communities[state.city].concat(OPTIONS.openOption) : [];
+    /* "Open to suggestions" leads the list */
+    return state.city ? [OPTIONS.openOption].concat(OPTIONS.communities[state.city]) : [];
   }
   return OPTIONS[groupId];
 }
@@ -515,16 +701,99 @@ function isSelected(groupId, v) {
   return Array.isArray(val) ? val.includes(v) : val === v;
 }
 
-function studioBlocked() {
-  return state.propertyType.some(t => NO_STUDIO_TYPES.includes(t));
+function blockedBedrooms() {
+  return BEDROOM_RULES[state.propertyType] || [];
+}
+
+function bedroomNote() {
+  const blocked = blockedBedrooms();
+  if (!blocked.length) return "";
+  if (blocked.includes("1")) return state.propertyType + "s start at 2 bedrooms.";
+  return "Studios are only available for apartments.";
 }
 
 function isDisabled(groupId, v) {
-  return groupId === "bedrooms" && v === STUDIO && studioBlocked();
+  return groupId === "bedrooms" && blockedBedrooms().includes(v);
+}
+
+/* ---------- communities dropdown ---------- */
+let communitiesQuery = "";
+
+function renderCommunities() {
+  const list  = document.getElementById("communities");
+  const empty = document.getElementById("communitiesEmpty");
+  const q = communitiesQuery.trim().toLowerCase();
+  list.innerHTML = "";
+  let shown = 0;
+  currentOptions("communities").forEach(name => {
+    const isOpen = name === OPTIONS.openOption;
+    if (q && !isOpen && !name.toLowerCase().includes(q)) return;
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "option" + (isOpen ? " option--open" : "");
+    b.setAttribute("role", "option");
+    b.setAttribute("aria-selected", isSelected("communities", name) ? "true" : "false");
+    b.innerHTML = '<span class="option__box" aria-hidden="true"></span>';
+    b.appendChild(document.createTextNode(name));
+    b.addEventListener("click", () => toggle("communities", name, true));
+    list.appendChild(b);
+    if (!isOpen) shown++;
+  });
+  empty.hidden = !(q && shown === 0);
+  renderCommunityTags();
+}
+
+function renderCommunityTags() {
+  const tags  = document.getElementById("communitiesTags");
+  const label = document.getElementById("communitiesLabel");
+  const sel   = state.communities;
+  tags.innerHTML = "";
+  sel.forEach(name => {
+    const t = document.createElement("button");
+    t.type = "button";
+    t.className = "tag";
+    t.setAttribute("aria-label", "Remove " + name);
+    t.textContent = name;
+    const x = document.createElement("span");
+    x.className = "tag__x";
+    x.setAttribute("aria-hidden", "true");
+    x.textContent = "×";
+    t.appendChild(x);
+    t.addEventListener("click", () => toggle("communities", name, true));
+    tags.appendChild(t);
+  });
+  if (!sel.length) {
+    label.textContent = "Select communities";
+    label.classList.add("dropdown__label--placeholder");
+  } else {
+    label.textContent = sel[0] === OPTIONS.openOption
+      ? OPTIONS.openOption
+      : sel.length + (sel.length === 1 ? " community selected" : " communities selected");
+    label.classList.remove("dropdown__label--placeholder");
+  }
+}
+
+function setCommunitiesOpen(open) {
+  const trigger = document.getElementById("communitiesTrigger");
+  const panel   = document.getElementById("communitiesPanel");
+  trigger.setAttribute("aria-expanded", open ? "true" : "false");
+  panel.hidden = !open;
+  if (open) {
+    communitiesQuery = "";
+    document.getElementById("communitiesSearch").value = "";
+    renderCommunities();
+    document.getElementById("communitiesSearch").focus();
+  }
+  postHeight();
+}
+
+function communitiesOpen() {
+  return document.getElementById("communitiesTrigger").getAttribute("aria-expanded") === "true";
 }
 
 /* ---------- chip rendering ---------- */
 function renderChips(groupId) {
+  if (groupId === "communities") { renderCommunities(); return; }
   const el = document.getElementById(groupId);
   const multi = el.dataset.multi === "true";
   el.innerHTML = "";
@@ -538,7 +807,7 @@ function renderChips(groupId) {
     b.setAttribute("aria-pressed", isSelected(groupId, v) ? "true" : "false");
     if (disabled) {
       b.setAttribute("aria-disabled", "true");
-      b.title = "Studios are only available for apartments";
+      b.title = bedroomNote();
     }
     b.addEventListener("click", () => { if (!disabled) toggle(groupId, v, multi); });
     el.appendChild(b);
@@ -557,27 +826,32 @@ function toggle(groupId, v, multi) {
     state[groupId] = (state[groupId] === v) ? null : v;
     if (groupId === "city") {
       state.communities = [];
+      setCommunitiesOpen(false);
       refreshCommunities();
     }
   }
+  /* picking "Open to suggestions" closes the list; anything else keeps it open */
+  if (groupId === "communities" && v === EXCLUSIVE.communities && state.communities.includes(v)) {
+    setCommunitiesOpen(false);
+  }
   renderChips(groupId);
   clearError(groupId);
-  if (groupId === "propertyType") applyStudioRule();
+  if (groupId === "propertyType") applyBedroomRule();
   postHeight();
 }
 
-/* When a villa / townhouse / penthouse / duplex is chosen, drop a selected
-   Studio and show why; re-render the bedroom chips so Studio greys out. */
-function applyStudioRule() {
-  const blocked = studioBlocked();
+/* When the chosen property type rules out the selected bedroom option,
+   drop it and show why; re-render the bedroom chips so the blocked ones grey out. */
+function applyBedroomRule() {
+  const blocked = blockedBedrooms();
   const note = document.getElementById("note-bedrooms");
-  if (blocked && state.bedrooms === STUDIO) {
+  let text = bedroomNote();
+  if (state.bedrooms && blocked.includes(state.bedrooms)) {
     state.bedrooms = null;
-    note.textContent = "Studios are only available for apartments — your bedroom choice has been cleared.";
-  } else {
-    note.textContent = "Studios are only available for apartments.";
+    text = text.replace(/\.$/, "") + " — your bedroom choice has been cleared.";
   }
-  note.classList.toggle("show", blocked);
+  note.textContent = text;
+  note.classList.toggle("show", blocked.length > 0);
   renderChips("bedrooms");
 }
 
@@ -613,8 +887,8 @@ function validateStep(step) {
   let ok = true;
   const need = (cond, id) => { cond ? clearError(id) : (showError(id), ok = false); };
   if (step === 1) {
-    need(state.propertyType.length > 0, "propertyType");
-    need(!!state.bedrooms && !(state.bedrooms === STUDIO && studioBlocked()), "bedrooms");
+    need(!!state.propertyType, "propertyType");
+    need(!!state.bedrooms && !blockedBedrooms().includes(state.bedrooms), "bedrooms");
   }
   if (step === 2) {
     need(!!state.city, "city");
@@ -641,7 +915,8 @@ function validateStep(step) {
 /* ---------- payload ---------- */
 function buildPayload() {
   return {
-    "property-type": state.propertyType,
+    /* kept as an array (one item) so the webhook's existing field shape is unchanged */
+    "property-type": state.propertyType ? [state.propertyType] : [],
     "bedrooms": state.bedrooms,
     "city": state.city,
     "communities": state.communities,
@@ -712,6 +987,28 @@ document.getElementById("consent").addEventListener("change", () => clearError("
   document.getElementById(id).addEventListener("input", () => clearError(id)));
 document.getElementById("submitBtn").addEventListener("click", submit);
 window.addEventListener("resize", postHeight);
+
+/* communities dropdown */
+document.getElementById("communitiesTrigger").addEventListener("click", () =>
+  setCommunitiesOpen(!communitiesOpen()));
+document.getElementById("communitiesSearch").addEventListener("input", e => {
+  communitiesQuery = e.target.value;
+  renderCommunities();
+  postHeight();
+});
+document.addEventListener("click", e => {
+  if (communitiesOpen() && !document.getElementById("communitiesDropdown").contains(e.target)) {
+    setCommunitiesOpen(false);
+  }
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && communitiesOpen()) {
+    setCommunitiesOpen(false);
+    document.getElementById("communitiesTrigger").focus();
+  }
+});
+document.querySelectorAll("[data-next], [data-back]").forEach(b =>
+  b.addEventListener("click", () => setCommunitiesOpen(false)));
 
 /* ---------- init ---------- */
 ["propertyType", "bedrooms", "city", "budget", "offplan", "view"].forEach(renderChips);
